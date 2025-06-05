@@ -16,11 +16,7 @@ void lerPais(Pais *pais, int num) {
     printf("===== CADASTRO PAIS %d =====\n", num);
 
     printf("Nome do pais: ");
-    getchar(); // limpar buffer antes de ler string
-    fgets(pais->nomePais, sizeof(pais->nomePais), stdin);
-    size_t len = strlen(pais->nomePais);
-    if(len > 0 && pais->nomePais[len - 1] == '\n')
-        pais->nomePais[len - 1] = '\0';
+    scanf(" %[^\n]", &pais->nomePais);
 
     printf("Populacao: ");
     scanf("%lu", &pais->populacao);
