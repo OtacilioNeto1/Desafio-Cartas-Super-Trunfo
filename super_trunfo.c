@@ -1,133 +1,131 @@
 #include <stdio.h>
 
+// Definição da struct para a carta
 struct Carta {
-    char estado;                 // letra de A a H
-    char codigo[4];              // ex: A01
-    char nomeCidade[50];
-    unsigned long int populacao; // mudou para unsigned long int
-    float area;
-    float pib;                   // em bilhoes de reais
-    int pontosTuristicos;
-    float densidadePopulacional;
-    float pibPerCapita;
-    float superPoder;
+    char estado[3];           // Ex: "SP"
+    char codigo[4];           // Ex: "A01"
+    char nomeCidade[50];      // Nome da cidade
+    int populacao;            // Número de habitantes
+    float area;               // Área em km²
+    float pib;                // PIB em bilhões
+    int pontosTuristicos;     // Número de pontos turísticos
+
+    float densidadePopulacional;  // calculada: populacao / area
+    float pibPerCapita;            // calculado: pib / populacao
 };
 
-// Função para ler os dados da carta
-void lerCarta(struct Carta *carta, int numero) {
-    printf("===== CADASTRO CARTA %d =====\n", numero);
-    printf("Estado (letra de A a H): ");
-    scanf(" %c", &carta->estado);
-    printf("Codigo da Carta (ex: A01): ");
+// Função para ler dados da carta
+void cadastrarCarta(struct Carta *carta, int numCarta) {
+    printf("===== CADASTRO CARTA %d =====\n", numCarta);
+
+    printf("Estado (ex: SP): ");
+    scanf("%2s", carta->estado);
+
+    printf("Codigo da carta (ex: A01): ");
     scanf("%3s", carta->codigo);
-    printf("Nome da Cidade: ");
-    scanf(" %[^\n]", carta->nomeCidade);
-    printf("Populacao (numero inteiro, maior que 0): ");
-    scanf("%lu", &carta->populacao);
-    printf("Area (em km2): ");
+
+    printf("Nome da cidade: ");
+    scanf(" %[^\n]", &carta->nomeCidade);
+
+    printf("Populacao: ");
+    scanf("%d", &carta->populacao);
+
+    printf("Area (km²): ");
     scanf("%f", &carta->area);
-    printf("PIB (em bilhoes de reais): ");
+
+    printf("PIB (bilhoes): ");
     scanf("%f", &carta->pib);
-    printf("Numero de Pontos Turisticos: ");
+
+    printf("Numero de pontos turisticos: ");
     scanf("%d", &carta->pontosTuristicos);
-    printf("\n");
-}
 
-// Função para calcular densidade populacional e PIB per capita
-void calcularIndices(struct Carta *carta) {
+    // Calcular densidade e PIB per capita
     carta->densidadePopulacional = carta->populacao / carta->area;
-    carta->pibPerCapita = (carta->pib * 1000000000.0f) / carta->populacao;
-}
-
-// Função para calcular o super poder
-void calcularSuperPoder(struct Carta *carta) {
-    // Super Poder = populacao + area + pib + pontosTuristicos + pibPerCapita + (1 / densidadePopulacional)
-    float pop = (float)carta->populacao;
-    float densidadeInv = 1.0f / carta->densidadePopulacional;
-
-    carta->superPoder = pop + carta->area + carta->pib + (float)carta->pontosTuristicos + carta->pibPerCapita + densidadeInv;
-}
-
-// Função para exibir os dados da carta incluindo os calculados
-void exibirCarta(struct Carta carta, int numero) {
-    printf("===== CARTA %d =====\n", numero);
-    printf("Estado: %c\n", carta.estado);
-    printf("Codigo: %s\n", carta.codigo);
-    printf("Nome da Cidade: %s\n", carta.nomeCidade);
-    printf("Populacao: %lu\n", carta.populacao);
-    printf("Area: %.2f km2\n", carta.area);
-    printf("PIB: %.2f bilhoes de reais\n", carta.pib);
-    printf("Numero de Pontos Turisticos: %d\n", carta.pontosTuristicos);
-    printf("Densidade Populacional: %.2f hab/km2\n", carta.densidadePopulacional);
-    printf("PIB per Capita: %.2f reais\n", carta.pibPerCapita);
-    printf("Super Poder: %.2f\n\n", carta.superPoder);
-}
-
-// Função para exibir os resultados da comparação
-void compararCartas(struct Carta c1, struct Carta c2) {
-    printf("===== COMPARACAO DE CARTAS =====\n\n");
-
-    // Populacao: maior vence
-    printf("Populacao: Carta %d venceu (%d)\n", 
-        1 * (c1.populacao > c2.populacao) + 2 * (c1.populacao <= c2.populacao), 
-        (c1.populacao > c2.populacao));
-
-    // Area: maior vence
-    printf("Area: Carta %d venceu (%d)\n", 
-        1 * (c1.area > c2.area) + 2 * (c1.area <= c2.area), 
-        (c1.area > c2.area));
-
-    // PIB: maior vence
-    printf("PIB: Carta %d venceu (%d)\n", 
-        1 * (c1.pib > c2.pib) + 2 * (c1.pib <= c2.pib), 
-        (c1.pib > c2.pib));
-
-    // Pontos Turisticos: maior vence
-    printf("Pontos Turisticos: Carta %d venceu (%d)\n", 
-        1 * (c1.pontosTuristicos > c2.pontosTuristicos) + 2 * (c1.pontosTuristicos <= c2.pontosTuristicos), 
-        (c1.pontosTuristicos > c2.pontosTuristicos));
-
-    // Densidade Populacional: menor vence
-    printf("Densidade Populacional: Carta %d venceu (%d)\n", 
-        1 * (c1.densidadePopulacional < c2.densidadePopulacional) + 2 * (c1.densidadePopulacional >= c2.densidadePopulacional), 
-        (c1.densidadePopulacional < c2.densidadePopulacional));
-
-    // PIB per Capita: maior vence
-    printf("PIB per Capita: Carta %d venceu (%d)\n", 
-        1 * (c1.pibPerCapita > c2.pibPerCapita) + 2 * (c1.pibPerCapita <= c2.pibPerCapita), 
-        (c1.pibPerCapita > c2.pibPerCapita));
-
-    // Super Poder: maior vence
-    printf("Super Poder: Carta %d venceu (%d)\n", 
-        1 * (c1.superPoder > c2.superPoder) + 2 * (c1.superPoder <= c2.superPoder), 
-        (c1.superPoder > c2.superPoder));
+    carta->pibPerCapita = carta->pib * 1e9 / carta->populacao;  // Convertendo pib em reais para per capita
 
     printf("\n");
 }
 
+// Função que compara o atributo escolhido e exibe o vencedor
+void compararAtributo(struct Carta c1, struct Carta c2, int atributo) {
+    // atributo:
+    // 1 = Populacao
+    // 2 = Area
+    // 3 = PIB
+    // 4 = Densidade Populacional
+    // 5 = PIB per Capita
 
+    float valor1, valor2;
+    char nomeAtributo[30];
+    int cartaVencedora = 0; // 1 ou 2
+
+    // Atribuir valores e nome do atributo conforme escolha
+    if (atributo == 1) {
+        valor1 = (float)c1.populacao;
+        valor2 = (float)c2.populacao;
+        sprintf(nomeAtributo, "Populacao");
+    } else if (atributo == 2) {
+        valor1 = c1.area;
+        valor2 = c2.area;
+        sprintf(nomeAtributo, "Area");
+    } else if (atributo == 3) {
+        valor1 = c1.pib;
+        valor2 = c2.pib;
+        sprintf(nomeAtributo, "PIB");
+    } else if (atributo == 4) {
+        valor1 = c1.densidadePopulacional;
+        valor2 = c2.densidadePopulacional;
+        sprintf(nomeAtributo, "Densidade Populacional");
+    } else if (atributo == 5) {
+        valor1 = c1.pibPerCapita;
+        valor2 = c2.pibPerCapita;
+        sprintf(nomeAtributo, "PIB per Capita");
+    } else {
+        printf("Atributo invalido!\n");
+        return;
+    }
+
+    // Comparação:
+    // Para Densidade Populacional, menor vence
+    // Para os demais, maior vence
+
+    if (atributo == 4) { // Densidade Populacional
+        if (valor1 < valor2)
+            cartaVencedora = 1;
+        else
+            cartaVencedora = 2;
+    } else {
+        if (valor1 > valor2)
+            cartaVencedora = 1;
+        else
+            cartaVencedora = 2;
+    }
+
+    // Exibir resultados
+    printf("Comparacao de cartas (Atributo: %s):\n\n", nomeAtributo);
+    printf("Carta 1 - %s (%s): %.2f\n", c1.nomeCidade, c1.estado, valor1);
+    printf("Carta 2 - %s (%s): %.2f\n", c2.nomeCidade, c2.estado, valor2);
+    printf("\nResultado: Carta %d (%s) venceu!\n", cartaVencedora,
+           (cartaVencedora == 1) ? c1.nomeCidade : c2.nomeCidade);
+}
 
 int main() {
     struct Carta carta1, carta2;
 
-    lerCarta(&carta1, 1);
-    lerCarta(&carta2, 2);
+    // Cadastro das cartas
+    cadastrarCarta(&carta1, 1);
+    cadastrarCarta(&carta2, 2);
 
-    calcularIndices(&carta1);
-    calcularIndices(&carta2);
+    // Escolha do atributo a comparar (mude aqui para testar outro)
+    // 1 = Populacao, 2 = Area, 3 = PIB, 4 = Densidade Populacional, 5 = PIB per Capita
+    int atributoEscolhido = 1;
 
-    calcularSuperPoder(&carta1);
-    calcularSuperPoder(&carta2);
+    // Comparar e mostrar resultado
+    compararAtributo(carta1, carta2, atributoEscolhido);
 
-    printf("===== EXIBICAO DE DADOS =====\n\n");
-    exibirCarta(carta1, 1);
-    exibirCarta(carta2, 2);
-
-    compararCartas(carta1, carta2);
-
-    printf("Aperte ENTER para sair...");
-    getchar(); // consome o '\n' pendente
-    getchar(); // espera o Enter do usuario
+    printf("\nPressione ENTER para sair...");
+    getchar();
+    getchar(); 
 
     return 0;
 }
