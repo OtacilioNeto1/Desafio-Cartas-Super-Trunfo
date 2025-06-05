@@ -1,131 +1,152 @@
 #include <stdio.h>
+#include <string.h>
 
-// Definição da struct para a carta
-struct Carta {
-    char estado[3];           // Ex: "SP"
-    char codigo[4];           // Ex: "A01"
-    char nomeCidade[50];      // Nome da cidade
-    int populacao;            // Número de habitantes
-    float area;               // Área em km²
-    float pib;                // PIB em bilhões
-    int pontosTuristicos;     // Número de pontos turísticos
+// Definição da struct Pais
+typedef struct {
+    char nomePais[50];
+    unsigned long int populacao;
+    float area;
+    float pib;
+    int pontosTuristicos;
+    float densidadeDemografica;
+} Pais;
 
-    float densidadePopulacional;  // calculada: populacao / area
-    float pibPerCapita;            // calculado: pib / populacao
-};
+// Função para ler dados de um país
+void lerPais(Pais *pais, int num) {
+    printf("===== CADASTRO PAIS %d =====\n", num);
 
-// Função para ler dados da carta
-void cadastrarCarta(struct Carta *carta, int numCarta) {
-    printf("===== CADASTRO CARTA %d =====\n", numCarta);
-
-    printf("Estado (ex: SP): ");
-    scanf("%2s", carta->estado);
-
-    printf("Codigo da carta (ex: A01): ");
-    scanf("%3s", carta->codigo);
-
-    printf("Nome da cidade: ");
-    scanf(" %[^\n]", &carta->nomeCidade);
+    printf("Nome do pais: ");
+    getchar(); // limpar buffer antes de ler string
+    fgets(pais->nomePais, sizeof(pais->nomePais), stdin);
+    size_t len = strlen(pais->nomePais);
+    if(len > 0 && pais->nomePais[len - 1] == '\n')
+        pais->nomePais[len - 1] = '\0';
 
     printf("Populacao: ");
-    scanf("%d", &carta->populacao);
+    scanf("%lu", &pais->populacao);
 
-    printf("Area (km²): ");
-    scanf("%f", &carta->area);
+    printf("Area (km2): ");
+    scanf("%f", &pais->area);
 
     printf("PIB (bilhoes): ");
-    scanf("%f", &carta->pib);
+    scanf("%f", &pais->pib);
 
     printf("Numero de pontos turisticos: ");
-    scanf("%d", &carta->pontosTuristicos);
+    scanf("%d", &pais->pontosTuristicos);
 
-    // Calcular densidade e PIB per capita
-    carta->densidadePopulacional = carta->populacao / carta->area;
-    carta->pibPerCapita = carta->pib * 1e9 / carta->populacao;  // Convertendo pib em reais para per capita
+    // Calcular densidade demografica
+    pais->densidadeDemografica = pais->populacao / pais->area;
 
     printf("\n");
 }
 
-// Função que compara o atributo escolhido e exibe o vencedor
-void compararAtributo(struct Carta c1, struct Carta c2, int atributo) {
-    // atributo:
-    // 1 = Populacao
-    // 2 = Area
-    // 3 = PIB
-    // 4 = Densidade Populacional
-    // 5 = PIB per Capita
+// Função para mostrar dados de um país
+void mostrarPais(Pais pais, int num) {
+    printf("===== PAIS %d =====\n", num);
+    printf("Nome do pais: %s\n", pais.nomePais);
+    printf("Populacao: %lu\n", pais.populacao);
+    printf("Area: %.2f km2\n", pais.area);
+    printf("PIB: %.2f bilhoes\n", pais.pib);
+    printf("Pontos turisticos: %d\n", pais.pontosTuristicos);
+    printf("Densidade demografica: %.2f hab/km2\n\n", pais.densidadeDemografica);
+}
 
-    float valor1, valor2;
-    char nomeAtributo[30];
-    int cartaVencedora = 0; // 1 ou 2
+// Função para comparar os dois países
+void compararPaises(Pais p1, Pais p2, int opcao) {
+    printf("===== RESULTADO DA COMPARACAO =====\n");
 
-    // Atribuir valores e nome do atributo conforme escolha
-    if (atributo == 1) {
-        valor1 = (float)c1.populacao;
-        valor2 = (float)c2.populacao;
-        sprintf(nomeAtributo, "Populacao");
-    } else if (atributo == 2) {
-        valor1 = c1.area;
-        valor2 = c2.area;
-        sprintf(nomeAtributo, "Area");
-    } else if (atributo == 3) {
-        valor1 = c1.pib;
-        valor2 = c2.pib;
-        sprintf(nomeAtributo, "PIB");
-    } else if (atributo == 4) {
-        valor1 = c1.densidadePopulacional;
-        valor2 = c2.densidadePopulacional;
-        sprintf(nomeAtributo, "Densidade Populacional");
-    } else if (atributo == 5) {
-        valor1 = c1.pibPerCapita;
-        valor2 = c2.pibPerCapita;
-        sprintf(nomeAtributo, "PIB per Capita");
-    } else {
-        printf("Atributo invalido!\n");
-        return;
+    float valor1 = 0, valor2 = 0;
+    char nomeAtributo[30] = "";
+    int vencedor = 0; // 0 empate, 1 p1 vence, 2 p2 vence
+
+    switch(opcao) {
+        case 1: // Populacao
+            valor1 = (float)p1.populacao;
+            valor2 = (float)p2.populacao;
+            strcpy(nomeAtributo, "Populacao");
+            break;
+        case 2: // Area
+            valor1 = p1.area;
+            valor2 = p2.area;
+            strcpy(nomeAtributo, "Area");
+            break;
+        case 3: // PIB
+            valor1 = p1.pib;
+            valor2 = p2.pib;
+            strcpy(nomeAtributo, "PIB");
+            break;
+        case 4: // Pontos turisticos
+            valor1 = (float)p1.pontosTuristicos;
+            valor2 = (float)p2.pontosTuristicos;
+            strcpy(nomeAtributo, "Pontos Turisticos");
+            break;
+        case 5: // Densidade demografica (menor vence)
+            valor1 = p1.densidadeDemografica;
+            valor2 = p2.densidadeDemografica;
+            strcpy(nomeAtributo, "Densidade Demografica");
+            break;
+        default:
+            printf("Opcao invalida para comparacao.\n");
+            return;
     }
 
-    // Comparação:
-    // Para Densidade Populacional, menor vence
-    // Para os demais, maior vence
+    // Mostrar valores
+    printf("%s:\n", nomeAtributo);
+    printf("Pais 1 - %s: %.2f\n", p1.nomePais, valor1);
+    printf("Pais 2 - %s: %.2f\n", p2.nomePais, valor2);
 
-    if (atributo == 4) { // Densidade Populacional
-        if (valor1 < valor2)
-            cartaVencedora = 1;
-        else
-            cartaVencedora = 2;
+    // Decisão aninhada
+    if (valor1 == valor2) {
+        printf("Resultado: Empate!\n");
     } else {
-        if (valor1 > valor2)
-            cartaVencedora = 1;
-        else
-            cartaVencedora = 2;
+        if (opcao == 5) { // densidade demografica menor vence
+            if (valor1 < valor2)
+                vencedor = 1;
+            else
+                vencedor = 2;
+        } else { // maior vence
+            if (valor1 > valor2)
+                vencedor = 1;
+            else
+                vencedor = 2;
+        }
+
+        if (vencedor == 1) {
+            printf("Resultado: Pais 1 (%s) venceu!\n", p1.nomePais);
+        } else {
+            printf("Resultado: Pais 2 (%s) venceu!\n", p2.nomePais);
+        }
     }
 
-    // Exibir resultados
-    printf("Comparacao de cartas (Atributo: %s):\n\n", nomeAtributo);
-    printf("Carta 1 - %s (%s): %.2f\n", c1.nomeCidade, c1.estado, valor1);
-    printf("Carta 2 - %s (%s): %.2f\n", c2.nomeCidade, c2.estado, valor2);
-    printf("\nResultado: Carta %d (%s) venceu!\n", cartaVencedora,
-           (cartaVencedora == 1) ? c1.nomeCidade : c2.nomeCidade);
+    printf("\n");
 }
 
 int main() {
-    struct Carta carta1, carta2;
+    Pais pais1, pais2;
+    int opcao;
 
-    // Cadastro das cartas
-    cadastrarCarta(&carta1, 1);
-    cadastrarCarta(&carta2, 2);
+    lerPais(&pais1, 1);
+    lerPais(&pais2, 2);
 
-    // Escolha do atributo a comparar (mude aqui para testar outro)
-    // 1 = Populacao, 2 = Area, 3 = PIB, 4 = Densidade Populacional, 5 = PIB per Capita
-    int atributoEscolhido = 1;
+    mostrarPais(pais1, 1);
+    mostrarPais(pais2, 2);
 
-    // Comparar e mostrar resultado
-    compararAtributo(carta1, carta2, atributoEscolhido);
+    printf("===== MENU DE COMPARACAO =====\n");
+    printf("Escolha o atributo para comparar:\n");
+    printf("1 - Populacao\n");
+    printf("2 - Area\n");
+    printf("3 - PIB\n");
+    printf("4 - Pontos Turisticos\n");
+    printf("5 - Densidade Demografica\n");
+    printf("Opcao: ");
+    scanf("%d", &opcao);
+    printf("\n");
 
-    printf("\nPressione ENTER para sair...");
-    getchar();
-    getchar(); 
+    compararPaises(pais1, pais2, opcao);
+
+    printf("Pressione ENTER para sair...");
+    getchar(); // limpa buffer
+    getchar(); // espera ENTER
 
     return 0;
 }
