@@ -72,5 +72,9 @@ int main() {
     printf("PIB: %.2f bilhões de reais\n", carta2.pib);
     printf("Número de Pontos Turísticos: %d\n", carta2.pontosTuristicos);
 
+    printf("Pressione Enter para sair...");
+    getchar();
+    getchar();
+
     return 0;
 }
